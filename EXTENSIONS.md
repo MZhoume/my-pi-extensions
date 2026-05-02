@@ -6,8 +6,8 @@ This folder contains user-level pi-coding-agent extensions. Future agents should
 
 - `border-status-editor.ts`
   - Replaces the default editor with a custom bordered editor and hides the default footer/working row.
-  - Tracks agent activity with `agent_start` / `agent_end`, animates a spinner, shows model, thinking level, context usage, cwd, and git branch.
-  - Uses `CustomEditor`, `setEditorComponent()`, `setFooter()`, `setWorkingVisible()`, `pi.exec()`, `ctx.getContextUsage()`, and `session_shutdown` cleanup.
+  - Tracks agent activity with `agent_start` / `agent_end`, animates a spinner, shows unmuted cwd/yellow git branch plus colored git change summary and context usage on the top border, and shows merged extension footer statuses on the bottom border opposite model/thinking.
+  - Uses `CustomEditor`, `setEditorComponent()`, `setFooter()`/`footerData.getExtensionStatuses()`, `setWorkingVisible()`, timed `pi.exec()` calls for debounced/cached git summary refreshes, `ctx.getContextUsage()`, and `session_shutdown` cleanup.
 
 - `git-checkpoint.ts`
   - Creates lightweight git stash object checkpoints at turn start and offers to restore code when forking.
@@ -26,9 +26,9 @@ This folder contains user-level pi-coding-agent extensions. Future agents should
   - Guards non-interactive modes with `ctx.hasUI`.
 
 - `mac-system-theme.ts`
-  - Polls macOS appearance with `osascript` and switches pi between `dark` and `light` themes.
-  - Uses `session_start`, `ctx.ui.setTheme()`, `setInterval`, and `session_shutdown` cleanup.
-  - Platform-specific to macOS; failures default to light mode.
+  - Checks system appearance at session startup and switches pi between `dark` and `light` themes.
+  - On macOS, uses `defaults read -g AppleInterfaceStyle`; on other platforms, uses `DARK_MODE=1` for dark mode and `DARK_MODE=0` for light mode.
+  - Uses `session_start` and `ctx.ui.setTheme()`; failures/defaults resolve to light mode.
 
 - `notify.ts`
   - Sends a native/terminal notification when the pi agent finishes and is ready for input.
@@ -52,6 +52,7 @@ This folder contains user-level pi-coding-agent extensions. Future agents should
 - Keep extension changes small and scoped. Extensions run with full system permissions.
 - Prefer TypeScript files directly in this folder for simple extensions. Use a directory with `index.ts` and `package.json` only when dependencies or multiple source files are needed.
 - Use `/reload` after editing auto-discovered extensions in `~/.pi/agent/extensions/` to load changes in an interactive pi session.
+- Run `tsc -p tsconfig.json` for a quick TypeScript verification pass across top-level extension files.
 - Check `ctx.hasUI` before using interactive UI in code paths that may run in print, JSON, or RPC mode.
 - Clean up timers, intervals, subprocesses, watchers, and stale TUI references in `session_shutdown`.
 - For custom tools:

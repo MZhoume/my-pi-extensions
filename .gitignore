@@ -1,0 +1,14 @@
+# Pi local/session artifacts
+.pi/
+.pi-lens/
+
+# Dependencies/build outputs
+node_modules/
+dist/
+build/
+
+# Logs and temp files
+*.log
+.DS_Store
+.tmp/
+tmp/
