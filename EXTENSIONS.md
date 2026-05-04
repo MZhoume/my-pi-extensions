@@ -6,6 +6,7 @@ This folder contains user-level pi-coding-agent extensions. Future agents should
 
 - `border-status-editor.ts`
   - Replaces the default editor with a custom bordered editor and hides the default footer/working row.
+  - Renders the editor as top bar, one blank padding row, input rows, one blank padding row, then bottom bar.
   - Tracks agent activity with `agent_start` / `agent_end`, animates a spinner, shows unmuted cwd/yellow git branch plus colored git change summary and context usage on the top border, and shows merged extension footer statuses on the bottom border opposite model/thinking.
   - Uses `CustomEditor`, `setEditorComponent()`, `setFooter()`/`footerData.getExtensionStatuses()`, `setWorkingVisible()`, timed `pi.exec()` calls for debounced/cached git summary refreshes, `ctx.getContextUsage()`, and `session_shutdown` cleanup.
 
@@ -42,8 +43,9 @@ This folder contains user-level pi-coding-agent extensions. Future agents should
 
 - `todo.ts`
   - Registers a `todo` tool and `/todos` command for branch-aware task tracking.
+  - Shows a one-line widget above the input editor with a checkmark prefix, the current todo count/text, and dimmed numbered previews for remaining incomplete todos that fit.
   - Persists state in tool result `details`, then reconstructs from `ctx.sessionManager.getBranch()` on `session_start` and `session_tree`.
-  - Uses `StringEnum` from `@mariozechner/pi-ai`, `typebox`, custom tool rendering, and `ctx.ui.custom()` for the command UI.
+  - Uses `StringEnum` from `@mariozechner/pi-ai`, `typebox`, custom tool rendering, `ctx.ui.setWidget()` for the current/remaining todo widget, and `ctx.ui.custom()` for the command UI.
 
 ## Best practices for this folder
 

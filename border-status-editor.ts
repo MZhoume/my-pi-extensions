@@ -416,6 +416,10 @@ export default function (pi: ExtensionAPI) {
 					width,
 					borderColor,
 				);
+
+				const paddingLine = " ".repeat(Math.max(0, width));
+				lines.splice(1, 0, paddingLine);
+				lines.splice(lines.length - 1, 0, paddingLine);
 				return lines;
 			}
 		}
