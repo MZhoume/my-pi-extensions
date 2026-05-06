@@ -36,6 +36,17 @@ This folder contains user-level pi-coding-agent extensions. Future agents should
   - Supports Windows Terminal toast, Kitty OSC 99, and OSC 777 terminals such as Ghostty/iTerm2/WezTerm/rxvt-unicode.
   - Uses `agent_end` and writes terminal escape sequences to stdout.
 
+- `pi-logo.ts`
+  - Replaces Pi’s header with an ASCII Pi logo and subtitle showing model, thinking level, and project name, with a compact one-line gap before the editor.
+  - Picks random ANSI 256-color palette entries on each session launch, suitable for Ghostty, and uses a separate random color for each logo line plus the subtitle text.
+  - Adds `/pi-logo` to toggle the custom header on/off; enabling rerolls all line colors and disabling restores Pi’s built-in header.
+  - Uses `session_start`, `model_select`, `thinking_level_select`, `session_shutdown`, `ctx.ui.setHeader()`, and `pi.getThinkingLevel()` only after the session runtime is initialized.
+
+- `pi-lens-compact-status.ts`
+  - Hides pi-lens’ multi-line below-editor widget while preserving a compact footer status next to the LSP indicator.
+  - Converts pi-lens’ own widget output into `✓ clean` in green, or `E n` / `W n` in red/yellow, matching pi-lens’ internal summary calculation: deduped file diagnostics counted by severity from the widget header.
+  - Wraps `ctx.ui.setWidget()` to intercept the `pi-lens` widget, render it invisibly, parse its header summary, and publish a compact `ctx.ui.setStatus()` footer entry without importing pi-lens internals.
+
 - `questionnaire.ts`
   - Registers a `questionnaire` tool for single or multi-question clarification flows.
   - Uses `typebox` schemas, `ctx.hasUI`, `ctx.ui.custom()`, `Editor`, custom key handling, custom `renderCall()` / `renderResult()`, and structured tool `details`.
