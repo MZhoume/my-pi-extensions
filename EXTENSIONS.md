@@ -17,6 +17,7 @@ This folder contains user-level pi-coding-agent extensions. Future agents should
 
 - `inline-bash.ts`
   - Transforms user prompts by expanding `!{command}` inline bash snippets before the agent sees the prompt.
+  - Inserts output literally and expands only snippets in the original prompt, in order.
   - Preserves normal whole-line `!command` handling.
   - Uses the `input` event with `{ action: "transform" }`, `pi.exec("bash", ["-c", command])`, timeout handling, and UI notification when available.
   - Security note: this executes user-provided shell code; keep behavior explicit and avoid expanding unintended syntax.

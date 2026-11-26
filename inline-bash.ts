@@ -29,27 +29,19 @@ export default function (pi: ExtensionAPI) {
 			return { action: "continue" };
 		}
 
-		// Check if there are any inline bash patterns
-		if (!PATTERN.test(text)) {
+		const matches = [...text.matchAll(PATTERN)];
+		if (matches.length === 0) {
 			return { action: "continue" };
 		}
 
-		// Reset regex state after test()
-		PATTERN.lastIndex = 0;
-
-		let result = text;
+		let result = "";
+		let cursor = 0;
 		const expansions: Array<{ command: string; output: string; error?: string }> = [];
 
-		// Find all matches first (to avoid issues with replacing while iterating)
-		const matches: Array<{ full: string; command: string }> = [];
-		let match = PATTERN.exec(text);
-		while (match) {
-			matches.push({ full: match[0], command: match[1] });
-			match = PATTERN.exec(text);
-		}
-
-		// Execute each command and collect results
-		for (const { full, command } of matches) {
+		// Use original match offsets so earlier output can't change later matches.
+		for (const { 0: full, 1: command, index } of matches) {
+			result += text.slice(cursor, index);
+			cursor = index + full.length;
 			try {
 				const bashResult = await pi.exec("bash", ["-c", command], {
 					timeout: TIMEOUT_MS,
@@ -68,11 +60,11 @@ export default function (pi: ExtensionAPI) {
 					expansions.push({ command, output: trimmed });
 				}
 
-				result = result.replace(full, trimmed);
+				result += trimmed;
 			} catch (err) {
 				const errorMsg = err instanceof Error ? err.message : String(err);
 				expansions.push({ command, output: "", error: errorMsg });
-				result = result.replace(full, `[error: ${errorMsg}]`);
+				result += `[error: ${errorMsg}]`;
 			}
 		}
 
@@ -89,6 +81,6 @@ export default function (pi: ExtensionAPI) {
 			ctx.ui.notify(`Expanded ${expansions.length} inline command(s):\n${summary}`, "info");
 		}
 
-		return { action: "transform", text: result, images: event.images };
+		return { action: "transform", text: result + text.slice(cursor), images: event.images };
 	});
 }
